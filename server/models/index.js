@@ -4,17 +4,20 @@ var request = require('request');
 
 module.exports = {
   messages: {
-    get: function () {
-      console.log('inside get');
+    get: function (callback) {
+      console.log('inside MODEL.MESSAGES.GET');
+      var queryString = 'SELECT message, roomname FROM messages';
+      db.query(queryString, function(err, results) {
+        callback(err, results);
+      });
     }, // a function which produces all the messages
-    post: function (message, callback) {
-      console.log('inside post req');
+    post: function (params, callback) {
+      console.log('inside MODEL.MESSAGES.POST');
         //create querystring and pass qs to callback
-      db.query('INSERT INTO MESSAGES (message, userid, roomname) VALUES (?,?,?)', message, function(err, data) {
-        console.log('got through to db');
-        
+      var queryString = 'INSERT INTO MESSAGES (message, username, roomname) VALUES (?,?,?)';
+      db.query(queryString, params, function(err, data) {
+        console.log('the query for MODEL.MeSSAGES.POST');
         callback(err, data);
-      
       });
     
     }
@@ -22,10 +25,16 @@ module.exports = {
 
   users: {
     // Ditto as above.
-    get: function () {},
+    get: function (callback) {
+      console.log('inside MODEL.USERS.GET');
+      db.query('select * from users', function(err, data) {
+        callback(err, results);
+      });
+    },
     post: function (message, callback) {
-
+      console.log('inside MODEL.USER.POST');
       db.query('INSERT INTO USERS (username) VALUES(?)', message, function(err, data) {
+        console.log('inside the QUERY of MODEL.USER.POST');
         callback(err, data);
       });
      

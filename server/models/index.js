@@ -6,7 +6,7 @@ module.exports = {
   messages: {
     get: function (callback) {
       console.log('inside MODEL.MESSAGES.GET');
-      var queryString = 'SELECT message, roomname FROM messages';
+      var queryString = 'SELECT username, message, roomname FROM messages';
       db.query(queryString, function(err, results) {
         callback(err, results);
       });

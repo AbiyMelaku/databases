@@ -4,7 +4,7 @@ var app = {
   messages: [],
   friends: {},
   server: 'http://127.0.0.1:8000/classes/messages',
-  roomname: 'lobby',
+  roomname: 'main',
   username: 'anonymous',
 
   init: function() {
@@ -22,10 +22,19 @@ var app = {
     //fetching new messages on a interval
     setInterval(function() {
       app.fetch(true);
-    }, 10000);
+    }, 5000);
     
 
   },
+
+
+
+
+
+
+
+
+
 
   send: function(message) {
     $.ajax({
@@ -43,7 +52,7 @@ var app = {
         console.log('chatterbox:  Message sent ', data);
       },
       error: function(data) {
-        console.log('Failed to send message', data);
+        console.log('Failed to send response message', data);
       }
     });
   },
@@ -55,27 +64,28 @@ var app = {
       data: { order: '-createdAt' }, //not sure about this, //{order -created at} ?????
       success: function (data) {
         console.log('chatterbox: Message received', data); 
-        
+        console.log('what type is data', typeof data);
         // Don't bother if we have nothing to work with
-        if (!data.results || !data.results.length) { return; }
+        //debugger;
+        if (!data || data.length === 0) { return; }
         
         // Store messages for caching later
-        app.messages = data.results;
+        app.messages = data;
         
         // Get the last message
-        var mostRecentMessage = data.results[data.results.length - 1];
+        var mostRecentMessage = data[data.length - 1];
       
         // Only bother updating the DOM if we have a new message
-        if (mostRecentMessage.objectId !== app.lastMessageId) {
+        //if (mostRecentMessage.objectId !== app.lastMessageId) {
           // Update the UI with the fetched rooms
-          app.renderRoomList(data.results);
+        app.renderRoomList(data);
 
           // Update the UI with the fetched messages
-          app.renderMessages(data.results); //invoke later with animate as well
+        app.renderMessages(data); //invoke later with animate as well
 
           // Store the ID of the most recent message
-          app.lastMessageId = mostRecentMessage.objectId;
-        } 
+        app.lastMessageId = mostRecentMessage.objectId;
+        //} 
 
       },
       error: function (data) {
@@ -102,7 +112,7 @@ var app = {
     }
 
     var $message = $('<br><span/>');
-    $message.text(message.text).appendTo($chat);
+    $message.text(message.message).appendTo($chat);
 
     //adding chat to the user interface
     $('#chats').append($chat);
@@ -119,7 +129,7 @@ var app = {
       messages
         .filter(function(message) {
           return message.roomname === app.roomname ||
-                 app.roomname === 'lobby' && !message.roomname;
+                 app.roomname === 'main' && !message.roomname;
         })
         .forEach(app.renderMessage);
     }
